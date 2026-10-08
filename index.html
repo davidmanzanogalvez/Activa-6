@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050913">
+<title>ACTIVA 6.º · Portal de misiones</title>
+<style>
+:root{
+  --bg:#050913; --ink:#f5f7fb; --muted:#7f8da5;
+  --pink:#ff4fa3; --cyan:#35d9ff; --green:#56e0a2;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+button{font:inherit}
+
+/* ---------- PORTADA ---------- */
+#splash{
+  position:fixed;inset:0;z-index:100;display:grid;place-items:end center;
+  background:#020712 url("assets/portada.png") center/cover no-repeat;
+  transition:opacity .65s ease,visibility .65s ease;
+}
+#splash::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(2,7,18,0) 53%,rgba(2,7,18,.78) 100%);
+}
+#splash.hidden{opacity:0;visibility:hidden}
+.splash-actions{
+  position:relative;z-index:2;display:flex;align-items:center;gap:10px;
+  margin-bottom:max(26px,env(safe-area-inset-bottom));
+}
+.enter{
+  border:1px solid rgba(132,206,255,.45);border-radius:999px;padding:13px 27px;
+  color:#fff;background:rgba(4,15,31,.65);backdrop-filter:blur(12px);
+  font-weight:850;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 0 32px rgba(45,181,255,.11);transition:.18s ease;
+}
+.enter:hover,.enter:focus-visible{transform:translateY(-2px);border-color:#79dfff;background:rgba(6,25,48,.82)}
+
+/* icono fullscreen discreto */
+.fs{
+  width:31px;height:31px;padding:0;border-radius:7px;
+  border:1px solid rgba(145,188,235,.16);
+  background:rgba(7,16,30,.28);color:#8897ae;cursor:pointer;
+  display:grid;place-items:center;transition:.18s ease;
+}
+.fs:hover,.fs:focus-visible{color:#eaf4ff;border-color:rgba(122,207,255,.48);background:rgba(10,24,43,.72)}
+.fs svg{width:14px;height:14px}
+.fs path{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- PORTAL ---------- */
+.portal{
+  height:100svh;min-height:500px;position:relative;overflow:hidden;
+  background:
+    radial-gradient(circle at 50% -4%,rgba(52,124,192,.14),transparent 31%),
+    radial-gradient(circle at 14% 58%,rgba(255,79,163,.06),transparent 26%),
+    radial-gradient(circle at 86% 58%,rgba(53,217,255,.06),transparent 26%),
+    radial-gradient(circle at 50% 100%,rgba(86,224,162,.05),transparent 22%),
+    #050913;
+}
+.portal::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;
+  background-image:
+    radial-gradient(circle,rgba(255,255,255,.55) 0 1px,transparent 1.2px),
+    radial-gradient(circle,rgba(80,166,255,.35) 0 1px,transparent 1.2px);
+  background-size:97px 97px,157px 157px;background-position:18px 24px,68px 82px;
+}
+.portal::after{
+  content:"";position:absolute;left:8%;right:8%;top:54%;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(88,153,215,.11) 17%,rgba(88,153,215,.18) 50%,rgba(88,153,215,.11) 83%,transparent);
+  box-shadow:0 0 24px rgba(80,160,220,.08);
+}
+
+.shell{
+  position:relative;z-index:2;width:min(1320px,calc(100% - 34px));height:100%;
+  margin:auto;padding:8px 0 8px;
+  display:grid;
+  grid-template-rows:31px minmax(112px,23vh) 20px minmax(0,1fr) 10px;
+  gap:3px;
+}
+.topbar{display:flex;justify-content:flex-end;align-items:center}
+.logo-wrap{display:grid;place-items:center;min-height:0}
+.logo{
+  display:block;width:auto;height:auto;
+  max-width:min(930px,92vw);max-height:22vh;
+  object-fit:contain;filter:drop-shadow(0 16px 44px rgba(0,0,0,.34));
+}
+.choose{
+  margin:0;text-align:center;color:#7c899d;font-size:9px;font-weight:850;
+  letter-spacing:.31em;text-transform:uppercase;
+}
+
+/* órbita posterior */
+.worlds-wrap{position:relative;min-height:0}
+.orbit{
+  position:absolute;inset:1% 3% 9%;width:94%;height:90%;pointer-events:none;overflow:visible;opacity:.58;
+}
+.orbit path{
+  fill:none;stroke:rgba(86,150,210,.12);stroke-width:1.1;vector-effect:non-scaling-stroke;
+}
+.orbit .dash{stroke-dasharray:4 14;animation:flow 14s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-180}}
+
+.worlds{
+  position:relative;z-index:2;height:100%;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4.2vw;
+  align-items:center;
+}
+.world{
+  --accent:var(--cyan);
+  min-width:0;min-height:0;border:0;background:transparent;color:#fff;padding:0;
+  cursor:pointer;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;
+  align-items:center;justify-items:center;text-align:center;outline:none;transition:opacity .25s ease,filter .25s ease;
+}
+.world-stage{
+  min-height:0;height:100%;display:grid;place-items:center;position:relative;
+  aspect-ratio:1 / 1;
+}
+.world-stage::before{
+  content:"";position:absolute;width:70%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 10%,transparent),transparent 68%);
+  filter:blur(16px);opacity:.6;transition:.25s ease;
+}
+.world-stage::after{
+  content:"";position:absolute;left:20%;right:20%;bottom:6%;height:16px;border-radius:50%;
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 23%,transparent),transparent 72%);
+  filter:blur(10px);opacity:.7;
+}
+.planet{
+  position:relative;z-index:2;display:block;
+  width:clamp(180px,21vw,275px);height:auto;max-height:none;
+  object-fit:contain;aspect-ratio:auto;
+  filter:drop-shadow(0 18px 42px rgba(0,0,0,.36));
+  transform:translateY(0) scale(var(--planet-scale));
+  transform-origin:center center;
+  transition:transform .33s cubic-bezier(.2,.8,.2,1),filter .33s ease;
+}
+.world-copy{
+  position:relative;z-index:3;padding:0 0 2px;
+  transform:translateY(-18px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.world small{
+  display:block;color:var(--accent);font-size:8px;font-weight:850;letter-spacing:.22em;text-transform:uppercase;margin-bottom:3px;
+}
+.world h2{
+  margin:0;font-size:clamp(20px,2.2vw,31px);letter-spacing:-.04em;line-height:1;
+}
+.go{
+  display:block;margin-top:4px;color:#718097;font-size:8px;font-weight:850;letter-spacing:.17em;text-transform:uppercase;
+  opacity:.7;transition:.2s ease;
+}
+.world:hover .planet,.world:focus-visible .planet{
+  transform:translateY(-7px) scale(var(--planet-scale));
+  filter:drop-shadow(0 23px 50px rgba(0,0,0,.42)) drop-shadow(0 0 25px color-mix(in srgb,var(--accent) 13%,transparent));
+}
+.world:hover .go,.world:focus-visible .go{color:var(--accent);opacity:1}
+.world:hover .world-stage::before,.world:focus-visible .world-stage::before{opacity:.95}
+.worlds:hover .world:not(:hover){opacity:.62;filter:saturate(.76)}
+.world:focus-visible .world-stage{outline:1px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:-3px;border-radius:24px}
+.lengua{--accent:var(--pink);--planet-scale:1.00}
+.mates{--accent:var(--cyan);--planet-scale:1.00}
+.sociales{--accent:var(--green);--planet-scale:1.00}
+
+.lengua .planet{width:clamp(180px,21vw,275px)}
+.mates .planet{width:clamp(180px,21vw,275px)}
+.sociales .planet{width:clamp(180px,21vw,275px)}
+
+footer{
+  text-align:center;color:#48576e;font-size:7px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;
+}
+
+/* ---------- MODAL ---------- */
+.modal{
+  position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;
+  background:rgba(1,5,12,.72);backdrop-filter:blur(12px);
+  opacity:0;visibility:hidden;transition:.25s;
+}
+.modal.open{opacity:1;visibility:visible}
+.card{
+  width:min(500px,94vw);border:1px solid rgba(126,165,220,.2);border-radius:22px;
+  background:#08111f;padding:22px;box-shadow:0 34px 110px rgba(0,0,0,.52);
+}
+.card h3{font-size:32px;letter-spacing:-.045em;margin:0 0 8px}
+.card p{margin:0 0 20px;color:#8796ad;line-height:1.5}
+.close{
+  width:100%;padding:12px 16px;border-radius:13px;border:1px solid #26364e;
+  background:#0c1728;color:#e7eef8;font-weight:800;cursor:pointer;
+}
+
+/* pantallas bajas */
+@media (max-height:700px) and (min-width:721px){
+  .shell{grid-template-rows:29px minmax(96px,20vh) 17px minmax(0,1fr) 8px}
+  .logo{max-height:19vh}
+  .planet{max-height:min(40vh,275px)}
+  .world h2{font-size:clamp(18px,2vw,27px)}
+  .go{margin-top:4px}
+}
+
+/* móvil/tablet estrecha: sigue sin scroll */
+@media (max-width:720px){
+  .portal{min-height:540px}
+  .shell{
+    width:calc(100% - 18px);padding:6px 0;
+    grid-template-rows:28px minmax(78px,14vh) 16px minmax(0,1fr) 8px;
+  }
+  .logo{max-height:13vh;max-width:96vw}
+  .choose{font-size:7px}
+  .orbit{display:none}
+  .worlds{grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr));gap:4px}
+  .world{
+    grid-template-columns:minmax(92px,29vw) 1fr;
+    grid-template-rows:1fr;align-items:center;text-align:left;
+    border-bottom:1px solid rgba(123,168,220,.08);
+  }
+  .world:last-child{border-bottom:0}
+  .world-stage{grid-column:1;grid-row:1}
+  .world-copy{grid-column:2;grid-row:1;padding-left:8px;transform:translateY(-6px);display:block}
+  .planet{max-height:min(19vh,135px);max-width:100%;transform:scale(.94)}
+  .lengua .planet{max-height:min(18vh,128px);transform:scale(.88)}
+  .world-stage::after{bottom:10%;left:15%;right:15%}
+  .world small{font-size:7px}
+  .world h2{font-size:clamp(20px,6.4vw,29px)}
+  .go{font-size:7px}
+  .worlds:hover .world:not(:hover){opacity:1;filter:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<section id="splash" aria-label="Portada de ACTIVA 6.º">
+  <div class="splash-actions">
+    <button class="enter" id="enter">Entrar</button>
+    <button class="fs" id="enterFs" title="Pantalla completa" aria-label="Entrar a pantalla completa">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H4v4M16 4h4v4M4 16v4h4M20 16v4h-4"/></svg>
+    </button>
+  </div>
+</section>
+
+<main class="portal">
+  <div class="shell">
+    <div class="topbar">
+      <button class="fs" id="fullscreenBtn" title="Pantalla completa" aria-label="Pantalla completa">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H4v4M16 4h4v4M4 16v4h4M20 16v4h-4"/></svg>
+      </button>
+    </div>
+
+    <div class="logo-wrap">
+      <img class="logo" src="assets/logo.png" alt="ACTIVA 6.º · Portal de misiones">
+    </div>
+
+    <p class="choose">Elige tu mundo</p>
+
+    <div class="worlds-wrap">
+      <svg class="orbit" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M80 205 C235 80 365 80 500 205 C635 80 765 80 920 205"/>
+        <path class="dash" d="M92 222 C270 330 730 330 908 222"/>
+      </svg>
+
+      <section class="worlds" aria-label="Asignaturas">
+        <button class="world lengua" data-name="Lengua">
+          <div class="world-stage">
+            <img class="planet" alt="Mundo de Lengua" src="assets/lengua.png">
+          </div>
+          <div class="world-copy">
+            <small>Mundo 01</small>
+            <h2>Lengua</h2>
+            <span class="go">Entrar →</span>
+          </div>
+        </button>
+
+        <button class="world mates" data-name="Matemáticas">
+          <div class="world-stage">
+            <img class="planet" alt="Mundo de Matemáticas" src="assets/matematicas.png">
+          </div>
+          <div class="world-copy">
+            <small>Mundo 02</small>
+            <h2>Matemáticas</h2>
+            <span class="go">Entrar →</span>
+          </div>
+        </button>
+
+        <button class="world sociales" data-name="CC. Sociales">
+          <div class="world-stage">
+            <img class="planet" alt="Mundo de Ciencias Sociales" src="assets/sociales.png">
+          </div>
+          <div class="world-copy">
+            <small>Mundo 03</small>
+            <h2>CC. Sociales</h2>
+            <span class="go">Entrar →</span>
+          </div>
+        </button>
+      </section>
+    </div>
+
+    <footer>ACTIVA 6.º · Portal de misiones</footer>
+  </div>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="card">
+    <h3 id="modalTitle">Mundo</h3>
+    <p>Este mundo está preparado. Aquí conectaremos las actividades de ACTIVA 6.º a medida que las vayamos creando.</p>
+    <button class="close" id="close">Volver al portal</button>
+  </div>
+</div>
+
+<script>
+const splash=document.getElementById('splash');
+
+async function toggleFullscreen(){
+  try{
+    if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen();
+  }catch(e){}
+}
+
+function enterPortal(){
+  splash.classList.add('hidden');
+  setTimeout(()=>splash.remove(),700);
+}
+
+document.getElementById('enter').addEventListener('click',enterPortal);
+document.getElementById('enterFs').addEventListener('click',async()=>{
+  await toggleFullscreen();
+  enterPortal();
+});
+document.getElementById('fullscreenBtn').addEventListener('click',toggleFullscreen);
+
+const modal=document.getElementById('modal');
+const title=document.getElementById('modalTitle');
+
+document.querySelectorAll('.world').forEach(w=>w.addEventListener('click',()=>{
+  title.textContent=w.dataset.name;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+}));
+
+function closeModal(){
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden','true');
+}
+document.getElementById('close').addEventListener('click',closeModal);
+modal.addEventListener('click',e=>{if(e.target===modal) closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeModal()});
+</script>
+</body>
+</html>
