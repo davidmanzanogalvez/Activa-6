@@ -32,6 +32,7 @@ const CATALOGO={"matematicas":{"nombre":"Matemáticas","intro":"Explora, compren
 const query=new URLSearchParams(location.search);
 const key=['matematicas','lengua','sociales'].includes(query.get('asignatura'))?query.get('asignatura'):'matematicas';
 const world=CATALOGO[key];
+if(key==='sociales'){const link=document.createElement('a');link.className='tab';link.href='podcast/index.html';link.textContent='🎧 Pódcast de Historia';const nav=document.createElement('nav');nav.setAttribute('aria-label','Audios de Sociales');nav.style.margin='0 0 24px';link.style.display='inline-block';nav.append(link);document.querySelector('.tabs').after(nav);}
 document.documentElement.style.setProperty('--accent',world.color);
 document.title='ACTIVA 6.º · '+world.nombre;
 document.getElementById('worldTitle').textContent=world.nombre;
