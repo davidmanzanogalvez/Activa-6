@@ -1,0 +1,45 @@
+name: Publicar Mundo 5 de Historia
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publicar-mundo-5.yml'
+permissions:
+  contents: write
+jobs:
+  abrir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Desbloquear Imperialismo en el mapa
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("mision-sociedad-contemporanea.html")
+          original = p.read_text(encoding="utf-8")
+          cambios = [
+            ("4 mundos disponibles · 4 por descubrir", "5 mundos disponibles · 3 por descubrir"),
+            ('<article aria-label="Mundo 5: Imperialismo, bloqueado" class="world locked" data-world-index="5">', '<article aria-label="Mundo 5: Imperialismo, disponible" class="world open" data-world-index="5">'),
+            ('<div class="world-top"><span class="world-num">MUNDO 05</span><span class="state">🔒 PRÓXIMAMENTE</span></div>', '<div class="world-top"><span class="world-num">MUNDO 05</span><span class="state">● DISPONIBLE</span></div>'),
+            ('<h3>Imperialismo</h3>\n<span class="soon">Se desbloqueará en clase</span>', '<h3>Imperialismo</h3>\n<button class="enter world-explore-button" id="enter-fifth" type="button" onclick="location.href=\'mundo-5-imperialismo.html\'">Explorar este mundo ↗</button>'),
+          ]
+          actualizado = original
+          for anterior, nuevo in cambios:
+              assert actualizado.count(anterior) == 1, f"Patrón no único: {anterior[:70]}"
+              actualizado = actualizado.replace(anterior, nuevo, 1)
+          assert actualizado.count('class="world open"') == 5
+          assert actualizado.count('class="world locked"') == 3
+          assert 'Mundo 6: Primera Guerra Mundial y Revolución rusa, bloqueado' in actualizado
+          p.write_text(actualizado, encoding="utf-8")
+          b = Path("mundo.html")
+          biblioteca = b.read_text(encoding="utf-8")
+          anterior = "Cuatro primeros mundos disponibles; los demás se abrirán progresivamente."
+          nuevo = "Cinco primeros mundos disponibles; los demás se abrirán progresivamente."
+          assert biblioteca.count(anterior) == 1
+          b.write_text(biblioteca.replace(anterior, nuevo, 1), encoding="utf-8")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mision-sociedad-contemporanea.html mundo.html
+          git commit -m "Abrir Mundo 5 Imperialismo y actualizar biblioteca"
+          git push
